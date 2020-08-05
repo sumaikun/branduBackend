@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common'
 
 import { SuppliersService } from './suppliers.service';
 import { Supplier as SupplierDto } from './dto/supplier';
-import { Supplier } from './interface/Supplier.interface';
+import { Supplier } from './interface/supplier.interface';
 
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';

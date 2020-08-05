@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user-dto';
-import { User } from './interface/User.interface';
+import { User } from './interface/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
