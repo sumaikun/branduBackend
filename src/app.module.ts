@@ -7,6 +7,7 @@ import { SuppliersModule } from './suppliers/suppliers.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { AuthModule } from './auth/auth.module';
 import { ShopifyModule } from './shopify/shopify.module';
+import { RulesModule } from './rules/rules.module';
 import { ConfigModule } from '@nestjs/config';
 
 
@@ -22,8 +23,9 @@ import { ConfigModule } from '@nestjs/config';
     MongooseModule.forRoot('mongodb://localhost/brandduBrain'),
     SuppliersModule,
     AuthModule,
-    ShopifyModule
-    ],
+    ShopifyModule,
+    RulesModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
