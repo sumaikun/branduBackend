@@ -34,8 +34,8 @@ export class RulesService {
         return response["ok"] > 0
     }
 
-    async findOneByEmail(email:string){
-        return await this.ruleModel.findOne({ "email" : email });
+    async findBySupplier(supplier:string){
+        return await this.ruleModel.find({ "supplier" : supplier });
     }
 
 }
