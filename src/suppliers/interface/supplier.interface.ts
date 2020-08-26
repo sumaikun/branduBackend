@@ -8,4 +8,11 @@ export interface Supplier extends Document{
     phone:string;
     photoUrl:string;
     type:string;
+    nit:string;
+    contact1Name:string;
+    contact1Phone:string;
+    contact1Email:string;
+    contact2Name:string;
+    contact2Phone:string;
+    contact2Email:string;
 }

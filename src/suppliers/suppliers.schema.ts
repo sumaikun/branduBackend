@@ -36,6 +36,32 @@ export const SuppliersSchema = new mongoose.Schema({
     type:{
         type:String,
         required:true
+    },
+    nit: {
+        type:String,
+        required:true,
+        unique:true
+    },
+    notes:{
+        type:String,
+    },
+    contact1Name:{
+        type:String,
+    },
+    contact1Phone:{
+        type:String,
+    },
+    contact1Email:{
+        type:String,
+    },
+    contact2Name:{
+        type:String,
+    },
+    contact2Phone:{
+        type:String,
+    },
+    contact2Email:{
+        type:String,
     }
 },
 {
