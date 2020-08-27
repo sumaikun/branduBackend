@@ -5,7 +5,7 @@ import { Rule } from './interface/rule.interface';
 import * as bcrypt from 'bcryptjs';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import * as stringSimilarity from 'string-similarity'
+import * as stringSimilarity from '../../node_modules/string-similarity'
 
 @Controller('rules')
 @UseGuards(AuthGuard('jwt'))
