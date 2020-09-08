@@ -67,37 +67,217 @@ export class RulesController {
             copyLine.id = line.id+1
 
             if(rule.ruleType === "GRAMMAR_CORRECTION"){
-                rule.selectedFields.map(
-                    field=>{
-                        const ifWords = rule.if.split(",")
-                        ifWords.map( word => {
-                            if(word){
-                                if(copyLine[field] && copyLine[field].includes(word))
-                                {
-                                    switch(rule.operationType){
-                                        case "REPLACE":
-                                            
-                                            copyLine[field] = copyLine[field].replace( word, rule.then )
 
-                                        case "DELETE":
+                if(rule.operationType === "ADD")
+                {
+                    rule.fieldsToCheck.map(
+                        field =>{
+                            const ifWords = rule.if.split(",")
+                            ifWords.map( word => {
+                                if(word){
 
-                                            copyLine[field] = copyLine[field].replace( word+",", "" )
-                                            copyLine[field] = copyLine[field].replace( word, "" )
+                                    if(copyLine[field] && copyLine[field].includes(word) && !rule.similarity)
+                                    {
+                                        rule.selectedFields.map(
+                                            field2=>{
+                                                if(field2 === "handle")
+                                                {
+                                                    copyLine[field2] = copyLine[field2]+"-"+rule.then
+                                                }
+                                                else{
+                                                    copyLine[field2] = copyLine[field2]+","+rule.then
+                                                }
+                                        })
+                                    }else{
 
-                                        default:
-                                            break;
+                                        const ruleSimilarity = Number(parseInt(rule.similarity)/100)
+
+                                        if( ruleSimilarity > 0 )
+                                        {
+                                            if( field === "tags" || field === "product_type" )
+                                            {
+                                                let isTrue = false
+                                                copyLine[field].split(",").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        isTrue = true
+                                                    }
+                                                })
+
+                                                if(isTrue){
+                                                    rule.selectedFields.map(
+                                                    field2=>{                                                           
+                                                        copyLine[field2] = copyLine[field2]+","+rule.then                                                            
+                                                    })
+                                                }
+
+                                            }
+                                            else if( field === "handle" )
+                                            {
+                                                let isTrue = false
+                                                copyLine[field].split("-").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        isTrue = true
+                                                    }
+                                                })
+
+                                                if(isTrue){
+                                                    rule.selectedFields.map(
+                                                    field2=>{                                                           
+                                                        copyLine[field2] = copyLine[field2]+"-"+rule.then                                                           
+                                                    })
+                                                }
+                                            }
+                                            else
+                                            {
+                                                let isTrue = false
+                                                copyLine[field].split(" ").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        isTrue = true
+                                                    }
+                                                })
+
+                                                if(isTrue){
+                                                    rule.selectedFields.map(
+                                                        field2=>{                                                           
+                                                            copyLine[field2] = copyLine[field2]+" "+rule.then                                                           
+                                                    })
+                                                }
+                                            }
+                                        }
+
+                                        
                                     }
-                                    
-                                    copyLine.mode = "test"
-
-                                    testData = insertIntoArray(testData,copyLine)
-                                    
                                 }
-                            }
-                        })
-                        
-                    }
-                )
+                            })
+                        }
+                    )
+
+                    copyLine.mode = "test"
+
+                    testData = insertIntoArray(testData,copyLine)
+                }
+                else
+                {
+                    rule.selectedFields.map(
+                        field=>{
+                            const ifWords = rule.if.split(",")
+                            ifWords.map( word => {
+                                if(word){
+
+                                    if(copyLine[field] && copyLine[field].includes(word)
+                                    && ( rule.operationType == "REPLACE" || rule.operationType == "DELETE" ) && !rule.similarity )
+                                    {
+                                        switch(rule.operationType){
+                                            case "REPLACE":
+                                                
+                                                copyLine[field] = copyLine[field].replace( word, rule.then )
+
+                                            case "DELETE":
+
+                                                copyLine[field] = copyLine[field].replace( word+",", "" )
+                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                
+
+                                            default:
+                                                break;
+                                        }
+                                        
+                                        copyLine.mode = "test"
+
+                                        testData = insertIntoArray(testData,copyLine)
+                                        
+                                    }else{
+                                        const ruleSimilarity = Number(parseInt(rule.similarity)/100)
+
+                                        if( ruleSimilarity > 0 )
+                                        {
+                                            if( field === "tags" || field === "product_type" )
+                                            {
+                                                
+                                                copyLine[field].split(",").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        switch(rule.operationType){
+                                                            case "REPLACE":
+                                                                
+                                                                copyLine[field] = copyLine[field].replace( word, rule.then )
+                
+                                                            case "DELETE":
+                
+                                                                copyLine[field] = copyLine[field].replace( word+",", "" )
+                                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                                
+                
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                })                                           
+
+                                            }
+                                            else if( field === "handle" )
+                                            {
+                                               
+                                                copyLine[field].split("-").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        switch(rule.operationType){
+                                                            case "REPLACE":
+                                                                
+                                                                copyLine[field] = copyLine[field].replace( word, rule.then )
+                
+                                                            case "DELETE":
+                
+                                                                copyLine[field] = copyLine[field].replace( word+"-", "" )
+                                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                                
+                
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                })
+
+                                            }
+                                            else
+                                            {
+                                                
+                                                copyLine[field].split(" ").map( similar => {
+                                                    if( stringSimilarity.compareTwoStrings(word,similar) >=  ruleSimilarity)
+                                                    {
+                                                        switch(rule.operationType){
+                                                            case "REPLACE":
+                                                                
+                                                                copyLine[field] = copyLine[field].replace( word, rule.then )
+                
+                                                            case "DELETE":
+                
+                                                                copyLine[field] = copyLine[field].replace( word+",", "" )
+                                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                                
+                
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                })
+
+                                            }
+                                        }
+
+                                        copyLine.mode = "test"
+
+                                        testData = insertIntoArray(testData,copyLine)
+                                    }
+                                }
+                            })
+                            
+                        }
+                    )
+                }
             }
 
             if(rule.ruleType === "PRICES"){

@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
 
-export const RulesSchema = new mongoose.Schema({
+export const ChronosSchema = new mongoose.Schema({
     created_by:{
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"User",
@@ -9,7 +9,7 @@ export const RulesSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"User",
     },
-    ruleType: {
+    title: {
         type:String,
         required:true,
     },
@@ -17,30 +17,22 @@ export const RulesSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"Supplier",
     },
-    operationType: {
+    description: {
         type:String
     },
-    if: {
-        type:String
+    automatical: {
+        type:Boolean
     },
-    then: {
-        type:String
-    },
-    similarity: {
-        type:String
-    },
-    selectedFields: [{
-        type:String
-    }],
-    fieldsToCheck: [{
-        type:String
+    rules: [{
+        type:mongoose.Schema.Types.ObjectId || null,
+        ref:"Rule",
     }]
 },
 {
   timestamps: true
 });
 
-RulesSchema.set('toJSON', {
+ChronosSchema.set('toJSON', {
     virtuals: true,
     versionKey:false,
     transform: function (doc, ret) {   delete ret._id  }

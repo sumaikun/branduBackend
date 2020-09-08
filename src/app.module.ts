@@ -8,8 +8,9 @@ import { MulterModule } from '@nestjs/platform-express';
 import { AuthModule } from './auth/auth.module';
 import { ShopifyModule } from './shopify/shopify.module';
 import { RulesModule } from './rules/rules.module';
+import { RulesVersionModule } from './rulesVersion/rulesVersion.module';
 import { ConfigModule } from '@nestjs/config';
-
+import { ChronosModule } from "./chronos/chronos.module"
 
 
 
@@ -24,7 +25,9 @@ import { ConfigModule } from '@nestjs/config';
     SuppliersModule,
     AuthModule,
     ShopifyModule,
-    RulesModule
+    RulesModule,
+    RulesVersionModule,
+    ChronosModule
   ],
   controllers: [AppController],
   providers: [AppService],

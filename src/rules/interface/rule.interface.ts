@@ -7,6 +7,7 @@ export interface Rule extends Document{
     if: string;  
     then: string;    
     supplier: string;   
-    selectedFields: string[];    
+    selectedFields: string[];
+    fieldsToCheck: string[];    
     similarity: string;
 }

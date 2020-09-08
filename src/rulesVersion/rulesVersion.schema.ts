@@ -9,6 +9,10 @@ export const RulesSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"User",
     },
+    originalRule:{
+        type:mongoose.Schema.Types.ObjectId || null,
+        ref:"Rule",
+    },
     ruleType: {
         type:String,
         required:true,
