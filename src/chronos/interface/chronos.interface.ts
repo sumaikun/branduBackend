@@ -6,5 +6,6 @@ export interface Chronos extends Document{
     supplier: string;
     description: string;  
     automatical: boolean;    
-    rules: string[];    
+    rules: string[];
+    executeHour: string;    
 }

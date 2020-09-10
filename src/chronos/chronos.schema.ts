@@ -16,17 +16,24 @@ export const ChronosSchema = new mongoose.Schema({
     supplier:{
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"Supplier",
+        required:true,
     },
     description: {
-        type:String
+        type:String,
+        required:true,
     },
     automatical: {
-        type:Boolean
+        type:Boolean,
+        required:true,
     },
     rules: [{
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"Rule",
-    }]
+    }],
+    executeHour: {
+        type:String,
+        required:true,
+    },
 },
 {
   timestamps: true

@@ -16,7 +16,7 @@ export class ChronosService {
 
     async findAll(): Promise<Chronos[]> {
         return await this.chronosModel.find()
-        .populate({path:'suppliers', model:'Supplier'})
+        .populate({path:'supplier', model:'Supplier'})
         .populate('created_by')
         .populate('modified_by').exec();        
     }

@@ -12,4 +12,6 @@ export class ChronosDto {
     @IsBoolean()
     automatical: boolean;
     rules: string[];
+    @IsNotEmpty()
+    executeHour: string;
 }
