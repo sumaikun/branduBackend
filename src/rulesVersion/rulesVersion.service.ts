@@ -34,8 +34,8 @@ export class RulesService {
         return response["ok"] > 0
     }
 
-    async findBySupplier(supplier:string){
-        return await this.ruleModel.find({ "supplier" : supplier });
+    async findByRule(rule:string){
+        return await this.ruleModel.find({ "originalRule" : rule });
     }
 
 }
