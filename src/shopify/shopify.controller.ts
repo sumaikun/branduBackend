@@ -30,7 +30,7 @@ export class ShopifyController {
 
         mergeProducts.products = products.data.products
 
-        console.log("products.data.products",products.data.products)
+        //console.log("products.data.products",products.data.products)
 
         const firstDirection = products.headers.link.split(",")[0]
 

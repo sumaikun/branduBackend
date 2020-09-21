@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 
 @Injectable()
-export class RulesService {
+export class VersionService {
 
     constructor(@InjectModel('RuleVersion') private readonly ruleModel: Model<Rule>) {}
 

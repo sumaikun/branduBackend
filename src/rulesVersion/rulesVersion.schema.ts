@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose'
 
-export const RulesSchema = new mongoose.Schema({
+export const RulesVersionSchema = new mongoose.Schema({
     created_by:{
         type:mongoose.Schema.Types.ObjectId || null,
         ref:"User",
@@ -44,7 +44,7 @@ export const RulesSchema = new mongoose.Schema({
   timestamps: true
 });
 
-RulesSchema.set('toJSON', {
+RulesVersionSchema .set('toJSON', {
     virtuals: true,
     versionKey:false,
     transform: function (doc, ret) {   delete ret._id  }

@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Param, Body, BadRequestException } 
 
 import { RulesService } from './rules.service';
 
-import { RulesService as VersionService  } from '../rulesVersion/rulesVersion.service';
+import {  VersionService  } from '../rulesVersion/rulesVersion.service';
 
 
 import { RuleDto } from './dto/rule-dto';
@@ -54,19 +54,46 @@ export class RulesController {
             currentRule.then === Rule.then &&  
             currentRule.ruleType === Rule.ruleType &&   
             currentRule.operationType === Rule.operationType &&
-            currentRule.supplier.toString() === Rule.supplier
+            currentRule.supplier.toString() === Rule.supplier &&
+            currentRule.similarity.toString() === Rule.similarity.toString()
         )
         {
             throw new BadRequestException('Can not update rule with the same data');
-        }        
+        }
+        
+        const versionsSaved = await this.VersionService.findByRule(id)
 
-        const copyRule = { ...Rule , originalRule:id }
+        let versionExist = false
 
-        //console.log("copyRule",copyRule)
+        console.log("versionsSaved",versionsSaved)
 
-        //await this.VersionService.create(  )
+        versionsSaved.map( data => {
+            if( arraysEqual(data.selectedFields,Rule.selectedFields) &&
+                arraysEqual(data.fieldsToCheck,Rule.fieldsToCheck) &&   
+                data.if === Rule.if &&    
+                data.then === Rule.then &&  
+                data.ruleType === Rule.ruleType &&   
+                data.operationType === Rule.operationType &&
+                data.supplier.toString() === Rule.supplier &&
+                data.similarity.toString() === Rule.similarity.toString()
+            )
+            {
+                versionExist = true
+            }
+        })
+       
+        if(!versionExist)
+        {
+            const copyRule = { ...Rule , originalRule:id }
+            await this.VersionService.create( copyRule )
+        }
 
         return this.RulesService.update(id, Rule);
+    }
+
+    @Get('versions/:id')
+    async versions(@Param('id') id): Promise<Rule[]> {
+        return this.VersionService.findByRule(id);
     }
 
     @Delete(':id')
@@ -321,18 +348,40 @@ export class RulesController {
                 }
             }
 
-            if(rule.ruleType === "PRICES"){
-                
+            if(rule.ruleType === "PRICES"){                
 
                 for(let i=0; i<copyLine.variants.length;i++)
                 {
                     if(rule.then.includes("price*")){
 
                         const dataToMultiply = rule.then.replace("price*","")
-                         
-                        copyLine.variants[i].price = Number(copyLine.variants[i].price) * Number(dataToMultiply)
 
-                        //console.log("corrected price",copyLine.variants[i].price)
+                        if(!isNaN(parseInt(dataToMultiply)))
+                        {
+                            copyLine.variants[i].price = Number(copyLine.variants[i].price) * Number(dataToMultiply)
+
+                            //console.log("corrected price",copyLine.variants[i].price)
+                        }                       
+                        
+                    }
+
+                    if(rule.then.includes("price+(")){
+
+                        const checkFormat = rule.then.substring(
+                            rule.then.lastIndexOf("(") + 1, 
+                            rule.then.lastIndexOf(")")
+                        );
+
+                        const numberToMultiply = checkFormat.replace("%", '')
+
+                        if(!isNaN(parseInt(numberToMultiply)))
+                        {
+                            const newPrice = Number(copyLine.variants[i].price) +  ( Number(copyLine.variants[i].price) *  ( Number(numberToMultiply) / 100 ) )
+
+                            copyLine.variants[i].price = newPrice
+                            //console.log("corrected price",copyLine.variants[i].price)
+                        }                        
+                        
                     }
                 }
                 
@@ -342,6 +391,23 @@ export class RulesController {
 
                 testData = insertIntoArray(testData,copyLine)
             }
+
+            if(rule.ruleType === "COLOR"){
+                //console.log("copyLine.variants",copyLine.variants)
+
+                for(let i=0; i<copyLine.variants.length;i++)
+                {
+                    console.log("copyLine.variants[i].option1?.includes(rule.if)",copyLine.variants[i].option1?.includes(rule.if))
+                    if(copyLine.variants[i].option1?.includes(rule.if))
+                    {
+                        copyLine.variants[i].option1 = rule.then
+                    }
+                }
+                copyLine.mode = "test"
+
+                testData = insertIntoArray(testData,copyLine)
+            }
+
            })
 
            console.log("iteration finish")

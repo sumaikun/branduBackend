@@ -11,6 +11,7 @@ import { RulesModule } from './rules/rules.module';
 import { RulesVersionModule } from './rulesVersion/rulesVersion.module';
 import { ConfigModule } from '@nestjs/config';
 import { ChronosModule } from "./chronos/chronos.module"
+import { StadisticsModule } from "./stadistics/stadistics.module"
 
 
 
@@ -27,7 +28,8 @@ import { ChronosModule } from "./chronos/chronos.module"
     ShopifyModule,
     RulesModule,
     RulesVersionModule,
-    ChronosModule
+    ChronosModule,
+    StadisticsModule
   ],
   controllers: [AppController],
   providers: [AppService],
