@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body , HttpService } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body , HttpService , BadGatewayException } from '@nestjs/common';
 
 
 import { UseGuards } from '@nestjs/common';
@@ -43,6 +43,8 @@ export class ShopifyController {
 
         let page_info = directionParams.page_info
 
+        let errorAcummulation = 0
+
         while( keepFetching )
         {
             let httpErrorS = true
@@ -52,8 +54,14 @@ export class ShopifyController {
                 try{
                     products = await this.httpService.get(process.env.SHOPIFY_CONNECTION+"products.json?limit=250&page_info="+page_info).toPromise();
                     httpErrorS = false
+                    
                 }catch(error){
                     console.log("error",error)
+                    errorAcummulation++
+                    if(errorAcummulation > 30)
+                    {
+                        throw new BadGatewayException();
+                    }
                 }
             }
            
