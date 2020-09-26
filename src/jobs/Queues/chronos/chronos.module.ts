@@ -4,6 +4,7 @@ import { ChronosProcessor } from './chronos.processor';
 import { ShopifyModule } from '../../../shopify/shopify.module';
 import { RulesModule } from '../../../rules/rules.module';
 import { SuppliersModule } from '../../../suppliers/suppliers.module';
+import { ProductTraceModule } from '../../../productTrace/productTrace.module';
 //import { ConfigModule, ConfigService } from '@nestjs/config';
 
 
@@ -19,7 +20,8 @@ const QueueModule = BullModule.registerQueue({
   imports: [QueueModule,
     ShopifyModule,
     RulesModule,
-    SuppliersModule],
+    SuppliersModule,
+    ProductTraceModule],
   providers: [ChronosProcessor],
   exports:[QueueModule]
 })

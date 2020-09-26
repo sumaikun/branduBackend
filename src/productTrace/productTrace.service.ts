@@ -22,7 +22,7 @@ export class ProductTraceService {
         return await this.productTraceModel.find({updatedAt:{
             $gte: fromDate,
             $lt: toDate
-        }});
+        }}).populate('supplier').populate('chronos');
     }
 
     async findBetweenDatesWithID(fromDate: Date, toDate: Date, id: string): Promise<any> {

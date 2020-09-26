@@ -117,24 +117,10 @@ export class ShopifyService {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async updateProduct(id:string,data:any,supplier:string,chronos:string): Promise<any> {
-
-        /*let day = moment().format('YYYY/MM/DD');
-
-        let tomorrow = moment().add(1,'d').format('YYYY/MM/DD');
-
-        const traces = await this.productTraceService.findBetweenDatesWithID(new Date(day),new Date(tomorrow),id)
-
-        if(traces.length > 0)
-        {
-            await this.productTraceService.update(traces[0].id,data)
-        }
-        else{
-            await this.productTraceService.create({shopifyId:id,supplier,chronos,shopifyProduct:data})  
-        }*/
+    async updateProduct(id:string,data:any): Promise<any> {
         
         const response = await this.httpService.put(process.env.SHOPIFY_CONNECTION+"products/"+id+".json",data).toPromise();
-        //console.log("response",response)
+        console.log("response",response.status === 200)
         return response
     }
 

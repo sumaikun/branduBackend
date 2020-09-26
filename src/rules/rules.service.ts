@@ -195,7 +195,7 @@ export class RulesService {
                                     }else{
                                         const ruleSimilarity = Number(parseInt(rule.similarity)/100)
 
-                                        console.log("ruleSimilarity",ruleSimilarity)
+                                        //console.log("ruleSimilarity",ruleSimilarity)
                                         
                                         if( ruleSimilarity > 0 )
                                         {

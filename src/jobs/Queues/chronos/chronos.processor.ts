@@ -4,6 +4,7 @@ import { Job } from 'bull';
 import { ShopifyService } from '../../../shopify/shopify.service'
 import { RulesService } from '../../../rules/rules.service'
 import { SuppliersService } from '../../../suppliers/suppliers.service'
+import { ProductTraceService } from '../../../productTrace/productTrace.service'
 
 //moment
 import * as moment from 'moment';
@@ -14,7 +15,8 @@ export class ChronosProcessor {
   constructor(
     private readonly shopifyService: ShopifyService,
     private readonly rulesService: RulesService,
-    private readonly suppliersService: SuppliersService
+    private readonly suppliersService: SuppliersService,
+    private readonly productTraceService: ProductTraceService
   ){}
 
   private readonly logger = new Logger(ChronosProcessor.name);
@@ -49,6 +51,52 @@ export class ChronosProcessor {
 
         console.log("supplierProducts.length",supplierProducts.length)
 
+        const rulesFixedData = await this.rulesService.executeRulesOnData( { rules: job.data.rules, exampleData: supplierProducts } )
+
+        //console.log("rulesFixedData",rulesFixedData)
+
+        const dataToEdit = rulesFixedData.filter( data => data.mode )
+
+        //console.log("dataToEdit",dataToEdit)
+
+        dataToEdit.map( async data => {
+          const originalData = rulesFixedData.filter( subdata => subdata.id === data.originalId )[0]
+
+          //console.log("originalData",originalData)          
+
+          data.id = data.originalId
+
+          this.shopifyService.updateProduct(data.id,{product:data}).then( async response => {
+
+            //console.log("update response",response)
+
+            if(response.status === 200 && originalData)
+            {
+                let day = moment().format('YYYY/MM/DD');
+
+                let tomorrow = moment().add(1,'d').format('YYYY/MM/DD');
+
+                const traces = await this.productTraceService.findBetweenDatesWithID(new Date(day),new Date(tomorrow),data.id)
+
+                if(traces.length > 0)
+                {
+                    this.productTraceService.update(traces[0].id,{product:originalData})
+                }
+                else{
+                    this.productTraceService.create({shopifyId:originalData.id,
+                      supplier:job.data.supplier,
+                      chronos:job.data.id,
+                      shopifyProduct:{product:originalData}
+                    })  
+                }          
+            }
+
+          }).catch( error => console.error(error) )
+
+          
+
+        })
+
        }
 
        
@@ -58,3 +106,5 @@ export class ChronosProcessor {
   }
 
 }
+
+//800704240

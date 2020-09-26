@@ -50,7 +50,7 @@ export class ShopifyController {
     @Put("/shopifyProduct/:id")
     async updateShopifyProduct(@Param('id') id,@Body() data: any) {
         //console.log(id,data)
-        const result =  await this.shopifyService.updateProduct(id,data,null,null)
+        const result =  await this.shopifyService.updateProduct(id,data)
         //console.log("result",result)
         return result.data
     }

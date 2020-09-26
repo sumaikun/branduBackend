@@ -14,7 +14,7 @@ export class ProductTraceController {
     async findBetweenDates(@Param('fromDate') fromDate,@Param('toDate') toDate): Promise<any> {
         console.log(fromDate,toDate)
         const from = moment(fromDate).format('YYYY/MM/DD')
-        const to = moment(toDate).format('YYYY/MM/DD')
+        const to = moment(toDate).add(1,'d').format('YYYY/MM/DD')
         return await this.productTraceService.findBetweenDates(new Date(from), new Date(to));
     }
 
