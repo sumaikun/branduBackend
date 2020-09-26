@@ -33,7 +33,7 @@
     "@nestjs/schedule": "^0.4.1",
     "bcryptjs": "^2.4.3",
     "bull": "^3.18.0",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "fs": "0.0.1-security",
     "google-libphonenumber": "^3.2.10",
