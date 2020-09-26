@@ -12,8 +12,11 @@ import { RulesVersionModule } from './rulesVersion/rulesVersion.module';
 import { ConfigModule } from '@nestjs/config';
 import { ChronosModule } from "./chronos/chronos.module"
 import { StadisticsModule } from "./stadistics/stadistics.module"
+import { ProductTraceModule } from "./productTrace/productTrace.module"
 
-
+//Jobs
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './jobs/TaskSchedules/tasks.module';
 
 @Module({
   imports: [
@@ -29,7 +32,10 @@ import { StadisticsModule } from "./stadistics/stadistics.module"
     RulesModule,
     RulesVersionModule,
     ChronosModule,
-    StadisticsModule
+    StadisticsModule,
+    ScheduleModule.forRoot(),
+    TasksModule,
+    ProductTraceModule
   ],
   controllers: [AppController],
   providers: [AppService],

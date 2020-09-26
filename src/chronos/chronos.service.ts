@@ -38,4 +38,8 @@ export class ChronosService {
         return await this.chronosModel.find({ "supplier" : supplier });
     }
 
+    async findByExecuteHour(executeHour:string){
+        return await this.chronosModel.find({ "executeHour" : executeHour });
+    }
+
 }

@@ -12,6 +12,7 @@ export const ChronosSchema = new mongoose.Schema({
     title: {
         type:String,
         required:true,
+        unique:true
     },
     supplier:{
         type:mongoose.Schema.Types.ObjectId || null,
