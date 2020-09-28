@@ -2,12 +2,14 @@ import { Controller, Get, Post, Put, Delete, Param, Body , HttpService , BadGate
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ShopifyService } from './shopify.service'
+import { ProductTraceService } from '../productTrace/productTrace.service'
 
 @Controller('shopify')
 @UseGuards(AuthGuard('jwt'))
 export class ShopifyController {
     constructor(private readonly httpService: HttpService,
-        private readonly shopifyService: ShopifyService) {}
+        private readonly shopifyService: ShopifyService,
+        private readonly productTraceService: ProductTraceService) {}
 
     @Get("/countByVendor/:vendor")
     async getCountByVendor(@Param('vendor') vendor) {
@@ -53,6 +55,28 @@ export class ShopifyController {
         const result =  await this.shopifyService.updateProduct(id,data)
         //console.log("result",result)
         return result.data
+    }
+
+    @Put("/shopifyProductWithBatch")
+    async shopifyProductWithBatch(@Body() data: any) {
+        console.log(data)
+        for (let index = 0; index < data.length; index++) {
+            const trace = await this.productTraceService.findOne(data[index])
+            //console.log("trace",trace)
+            //console.log("process")   
+            //await this.sleep(10)             
+            if(trace){
+                await this.shopifyService.updateProduct(trace.shopifyId,trace.shopifyProduct)
+                //console.log("done")
+            }        
+        }
+                          
+       
+        return null
+    }
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
    

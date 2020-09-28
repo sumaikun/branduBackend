@@ -37,7 +37,7 @@ export class ChronosProcessor {
 
        const jobSupplier = await this.suppliersService.findOne(job.data.supplier)
 
-       console.log("jobSupplier",jobSupplier)
+       //console.log("jobSupplier",jobSupplier)
 
        if(jobSupplier){
 
@@ -59,43 +59,54 @@ export class ChronosProcessor {
 
         //console.log("dataToEdit",dataToEdit)
 
-        dataToEdit.map( async data => {
-          const originalData = rulesFixedData.filter( subdata => subdata.id === data.originalId )[0]
+        console.log("dataToEdit.length",dataToEdit.length)
 
-          //console.log("originalData",originalData)          
 
-          data.id = data.originalId
+        for (let index = 0; index < dataToEdit.length; index++) {
 
-          this.shopifyService.updateProduct(data.id,{product:data}).then( async response => {
+            let data = dataToEdit[index]
 
-            //console.log("update response",response)
+            const originalData = rulesFixedData.filter( subdata => subdata.id === data.originalId )[0]
 
-            if(response.status === 200 && originalData)
-            {
-                let day = moment().format('YYYY/MM/DD');
+            //console.log("originalData",originalData)          
 
-                let tomorrow = moment().add(1,'d').format('YYYY/MM/DD');
+            data.id = data.originalId
 
-                const traces = await this.productTraceService.findBetweenDatesWithID(new Date(day),new Date(tomorrow),data.id)
+            await this.sleep(500)
 
-                if(traces.length > 0)
+            const response = this.shopifyService.updateProduct(data.id,{product:data}).then(
+              async response => {
+                console.log("done")
+
+                //console.log("response",response)
+    
+                if(response.status === 200 && originalData)
                 {
-                    this.productTraceService.update(traces[0].id,{product:originalData})
+                    let day = moment().format('YYYY/MM/DD');
+    
+                    let tomorrow = moment().add(1,'d').format('YYYY/MM/DD');
+    
+                    const traces = await this.productTraceService.findBetweenDatesWithID(new Date(day),new Date(tomorrow),data.id)
+    
+                    if(traces.length > 0)
+                    {
+                        this.productTraceService.update(traces[0].id,{product:originalData})
+                    }
+                    else{
+                        this.productTraceService.create({shopifyId:originalData.id,
+                          supplier:job.data.supplier,
+                          chronos:job.data.id,
+                          shopifyProduct:{product:originalData}
+                        })  
+                    }          
                 }
-                else{
-                    this.productTraceService.create({shopifyId:originalData.id,
-                      supplier:job.data.supplier,
-                      chronos:job.data.id,
-                      shopifyProduct:{product:originalData}
-                    })  
-                }          
-            }
+              }
+            )
 
-          }).catch( error => console.error(error) )
+           
+           
+        }
 
-          
-
-        })
 
        }
 
@@ -105,6 +116,12 @@ export class ChronosProcessor {
     
   }
 
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
 }
+
+
 
 //800704240

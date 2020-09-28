@@ -9,8 +9,12 @@ export class ProductTraceService {
     constructor(@InjectModel('ProductTrace') private readonly productTraceModel: Model<any>) {}
 
     async create(input: any): Promise<any> {
-        const createRule = new this.productTraceModel(input);
-        return await createRule.save();
+        const createproductTraceModel = new this.productTraceModel(input);
+        return await createproductTraceModel.save();
+    }
+
+    async findOne(id:string){
+        return await this.productTraceModel.findOne( {_id : id }).populate('created_by').populate('modified_by')       
     }
 
     async update(id:string,input: any){

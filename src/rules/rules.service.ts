@@ -357,18 +357,22 @@ export class RulesService {
 
             if(rule.ruleType === "COLOR"){
                 //console.log("copyLine.variants",copyLine.variants)
-
+                let colorChanged = false
                 for(let i=0; i<copyLine.variants.length;i++)
                 {
-                    console.log("copyLine.variants[i].option1?.includes(rule.if)",copyLine.variants[i].option1?.includes(rule.if))
-                    if(copyLine.variants[i].option1?.includes(rule.if))
+                    //console.log("copyLine.variants[i].option1?.includes(rule.if)",copyLine.variants[i].option1?.includes(rule.if))
+                    if(copyLine.variants[i].option1?.replace(rule.if,"").length === 0)
                     {
                         copyLine.variants[i].option1 = rule.then
+                        colorChanged = true
                     }
                 }
-                copyLine.mode = "test"
+                if(colorChanged){
+                    copyLine.mode = "test"
 
-                testData = insertIntoArray(testData,copyLine)
+                    testData = insertIntoArray(testData,copyLine)
+                }
+                
             }
 
            })

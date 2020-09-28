@@ -120,7 +120,7 @@ export class ShopifyService {
     async updateProduct(id:string,data:any): Promise<any> {
         
         const response = await this.httpService.put(process.env.SHOPIFY_CONNECTION+"products/"+id+".json",data).toPromise();
-        console.log("response",response.status === 200)
+        //console.log("response",response.status === 200)
         return response
     }
 
