@@ -3,13 +3,16 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ShopifyService } from './shopify.service'
 import { ProductTraceService } from '../productTrace/productTrace.service'
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Controller('shopify')
 @UseGuards(AuthGuard('jwt'))
 export class ShopifyController {
     constructor(private readonly httpService: HttpService,
         private readonly shopifyService: ShopifyService,
-        private readonly productTraceService: ProductTraceService) {}
+        private readonly productTraceService: ProductTraceService,
+        @InjectQueue('chronos') private readonly chronosQueue: Queue) {}
 
     @Get("/countByVendor/:vendor")
     async getCountByVendor(@Param('vendor') vendor) {
@@ -60,17 +63,45 @@ export class ShopifyController {
     @Put("/shopifyProductWithBatch")
     async shopifyProductWithBatch(@Body() data: any) {
         console.log(data)
-        for (let index = 0; index < data.length; index++) {
-            const trace = await this.productTraceService.findOne(data[index])
-            //console.log("trace",trace)
-            //console.log("process")   
-            //await this.sleep(10)             
-            if(trace){
-                await this.shopifyService.updateProduct(trace.shopifyId,trace.shopifyProduct)
-                //console.log("done")
-            }        
+        if(data.length <= 250)
+        {
+            let errorCount = 0
+            let successCount = 0
+            for (let index = 0; index < data.length; index++) {
+                const trace = await this.productTraceService.findOne(data[index])
+                //console.log("trace",trace)
+                //console.log("process")   
+                //await this.sleep(10)            
+                if( (index + 1) % 20 == 0 ){
+                    console.log("wait")
+                    await this.sleep(2800)
+                }
+    
+                if( (index + 1) % 125 == 0 ){
+                    
+                    console.log("wait")
+                    await this.sleep(5000)
+                
+                }
+                
+                if(trace){
+                    this.shopifyService.updateProduct(trace.shopifyId,trace.shopifyProduct).then( ok => { 
+                        successCount++
+                        console.log("successCount",successCount) 
+                    })
+                    .catch( error =>  {
+                        errorCount++
+                        console.log("errorCount",errorCount)
+                    })
+                    //console.log("done")
+                    await this.sleep(250)
+                }        
+            }
+                 
         }
-                          
+
+        this.chronosQueue.add('massiveUpdate',data);
+                    
        
         return null
     }

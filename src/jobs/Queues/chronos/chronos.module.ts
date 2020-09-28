@@ -1,5 +1,5 @@
 import { BullModule } from '@nestjs/bull';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ChronosProcessor } from './chronos.processor';
 import { ShopifyModule } from '../../../shopify/shopify.module';
 import { RulesModule } from '../../../rules/rules.module';
@@ -18,7 +18,7 @@ const QueueModule = BullModule.registerQueue({
 
 @Module({
   imports: [QueueModule,
-    ShopifyModule,
+    forwardRef(() => ShopifyModule),
     RulesModule,
     SuppliersModule,
     ProductTraceModule],

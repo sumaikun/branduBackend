@@ -32,6 +32,10 @@ export class ChronosProcessor {
   async checkChronos(job: Job) {
     this.logger.debug("lets check metrics")
     console.log("job",job.data)
+
+    let errorCount = 0
+    let successCount = 0
+
     if(job.data.automatical)
     {
 
@@ -44,12 +48,15 @@ export class ChronosProcessor {
         console.log("ready to change products")
 
         const totalProducts = await this.shopifyService.getAll()
- 
-        console.log("totalProducts.length()",totalProducts.products.length)
+        
+        this.logger.debug("totalProducts.length() : "+totalProducts.products.length)
+        //console.log("totalProducts.length()",totalProducts.products.length)
 
         const supplierProducts = totalProducts.products.filter( product => product.vendor ===  jobSupplier.vendorId )
 
-        console.log("supplierProducts.length",supplierProducts.length)
+        //console.log("supplierProducts.length",supplierProducts.length)
+
+        this.logger.debug("supplierProducts.length() : "+supplierProducts.length)
 
         const rulesFixedData = await this.rulesService.executeRulesOnData( { rules: job.data.rules, exampleData: supplierProducts } )
 
@@ -59,8 +66,8 @@ export class ChronosProcessor {
 
         //console.log("dataToEdit",dataToEdit)
 
-        console.log("dataToEdit.length",dataToEdit.length)
-
+        //console.log("dataToEdit.length",dataToEdit.length)
+        this.logger.debug("dataToEdit.length() : "+dataToEdit.length)
 
         for (let index = 0; index < dataToEdit.length; index++) {
 
@@ -72,16 +79,30 @@ export class ChronosProcessor {
 
             data.id = data.originalId
 
-            await this.sleep(500)
+            if( (index + 1) % 20 == 0 ){
+                this.logger.debug("wait")
+                //console.log("wait")
+                await this.sleep(3000)
+            }
+    
+            if( (index + 1) % 125 == 0 ){
+                this.logger.debug("wait longer")
+                //console.log("wait")
+                await this.sleep(5000)
+            
+            }           
 
             const response = this.shopifyService.updateProduct(data.id,{product:data}).then(
               async response => {
-                console.log("done")
+                //console.log("done")
 
                 //console.log("response",response)
     
                 if(response.status === 200 && originalData)
                 {
+
+                    successCount++
+                    this.logger.debug("successCount: "+successCount)
                     let day = moment().format('YYYY/MM/DD');
     
                     let tomorrow = moment().add(1,'d').format('YYYY/MM/DD');
@@ -101,19 +122,59 @@ export class ChronosProcessor {
                     }          
                 }
               }
-            )
+            ).catch( error =>  {
+              errorCount++
+              this.logger.debug("errorCount: "+errorCount)
+          })
 
-           
+          await this.sleep(340)           
            
         }
-
-
-       }
-
-       
+       }   
 
     }       
     
+  }
+
+  @Process('massiveUpdate')
+  async massiveUpdate(job: Job) {
+    const data = job.data
+    let errorCount = 0
+    let successCount = 0
+    for (let index = 0; index < data.length; index++) {
+        const trace = await this.productTraceService.findOne(data[index])
+        //console.log("trace",trace)
+        //console.log("process")   
+        //await this.sleep(10)            
+        if( (index + 1) % 20 == 0 ){
+            this.logger.debug("wait")
+            //console.log("wait")
+            await this.sleep(3000)
+        }
+
+        if( (index + 1) % 125 == 0 ){
+            this.logger.debug("wait longer")
+            //console.log("wait")
+            await this.sleep(5000)
+        
+        }
+        
+        if(trace){
+            this.shopifyService.updateProduct(trace.shopifyId,trace.shopifyProduct).then( ok => { 
+                successCount++
+                this.logger.debug("successCount: "+successCount)
+                //console.log("successCount",successCount) 
+            })
+            .catch( error =>  {
+                errorCount++
+                this.logger.debug("errorCount: "+errorCount)
+                //console.log("errorCount",errorCount)
+            })
+            //console.log("done")
+            await this.sleep(340)
+        }        
+    }
+                 
   }
 
   sleep(ms) {
