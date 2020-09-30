@@ -3,8 +3,12 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ShopifyService } from './shopify.service'
 import { ProductTraceService } from '../productTrace/productTrace.service'
+import { SuppliersService } from '../suppliers/suppliers.service'
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { UserGuard, RolesGuard } from '../auth/guards/custom.guards';
+import {Roles} from '../auth/decorators/custom.decorators'
+import { AccessUser } from '../auth/decorators/custom.decorators'
 
 @Controller('shopify')
 @UseGuards(AuthGuard('jwt'))
@@ -12,6 +16,7 @@ export class ShopifyController {
     constructor(private readonly httpService: HttpService,
         private readonly shopifyService: ShopifyService,
         private readonly productTraceService: ProductTraceService,
+        private readonly suppliersService:SuppliersService,
         @InjectQueue('chronos') private readonly chronosQueue: Queue) {}
 
     @Get("/countByVendor/:vendor")
@@ -24,12 +29,31 @@ export class ShopifyController {
     }
 
     @Get("/allProducts")
-    async allProducts() {
+    @UseGuards(UserGuard)
+    async allProducts(@AccessUser() user: any) {
         //console.log("process.env",process.env)
-        return await this.shopifyService.getAll()
+        const shopifyData = await this.shopifyService.getAll()
+
+        //console.log("shopifyData",shopifyData)
+        if(user.role === "ADMIN"){
+            return shopifyData
+        }
+
+        const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
+
+        let userSuppliersArray = []
+
+        userSuppliers.forEach( supplier => userSuppliersArray.push(supplier.vendorId) )
+
+        console.log("userSuppliers",userSuppliersArray)
+
+        const filteredData = shopifyData.products.filter( data =>  userSuppliersArray.includes(data.vendor) )
+
+        return { products: filteredData }
+
     }
 
-    @Get("/byVendor/:vendor")
+    /*@Get("/byVendor/:vendor")
     async byVendor(@Param('vendor') vendor) {
         //console.log("process.env",process.env)
         
@@ -50,8 +74,10 @@ export class ShopifyController {
         const products = await this.httpService.get(url).toPromise();
         //console.log("products",products.data)
         return products.data    
-    }
+    }*/
     
+    @Roles('ADMIN','OPERATOR')
+    @UseGuards(UserGuard,RolesGuard)
     @Put("/shopifyProduct/:id")
     async updateShopifyProduct(@Param('id') id,@Body() data: any) {
         //console.log(id,data)
@@ -60,6 +86,8 @@ export class ShopifyController {
         return result.data
     }
 
+    @Roles('ADMIN','OPERATOR')
+    @UseGuards(UserGuard,RolesGuard)
     @Put("/shopifyProductWithBatch")
     async shopifyProductWithBatch(@Body() data: any) {
         console.log(data)

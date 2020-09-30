@@ -38,4 +38,9 @@ export class SuppliersService {
         return await this.supplierModel.findOne({ "email" : email });
     }
 
+    async findByManySupplier(suppliers:Array<string>){
+        return await this.supplierModel.find().where('_id').in(suppliers).populate('created_by')
+        .populate('modified_by').exec();       
+    }
+
 }

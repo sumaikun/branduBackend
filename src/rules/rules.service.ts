@@ -385,6 +385,12 @@ export class RulesService {
 
     }
 
+    async findByManySupplier(suppliers:Array<string>){
+        return await this.ruleModel.find().where('supplier').in(suppliers)
+        .populate('created_by')
+        .populate('modified_by').exec();       
+    }
+
 }
 
 function insertIntoArray(arrayToInsert,data){

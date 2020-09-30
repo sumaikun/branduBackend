@@ -5,7 +5,9 @@ import { RuleDto } from './dto/rule-dto';
 import { Rule } from './interface/rule.interface';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
+import { UserGuard, RolesGuard } from '../auth/guards/custom.guards';
+import { AccessUser } from '../auth/decorators/custom.decorators'
+import {Roles} from '../auth/decorators/custom.decorators'
 
 @Controller('rules')
 @UseGuards(AuthGuard('jwt'))
@@ -14,8 +16,16 @@ export class RulesController {
         private readonly VersionService: VersionService) {}
 
     @Get()
-    async getRules(): Promise<any[]> {
-        return this.RulesService.findAll();
+    @UseGuards(UserGuard)
+    async getRules(@AccessUser() user: any): Promise<any[]> {
+
+        if(user.role === "ADMIN")
+        {
+            return this.RulesService.findAll();
+        }
+
+        return this.RulesService.findByManySupplier(user.suppliers);
+        
     }
 
     @Get(':id')
@@ -28,12 +38,16 @@ export class RulesController {
         return this.RulesService.findBySupplier(id);
     }
 
+    @Roles('ADMIN','OPERATOR')
+    @UseGuards(UserGuard,RolesGuard)
     @Post()
     create(@Body() Rule: RuleDto): Promise<Rule> {
 
         return this.RulesService.create(Rule);
     }
 
+    @Roles('ADMIN','OPERATOR')
+    @UseGuards(UserGuard,RolesGuard)
     @Put(':id')
     async editRule(@Param('id') id, @Body() Rule: RuleDto): Promise<Rule> {
 
@@ -91,6 +105,8 @@ export class RulesController {
         return this.VersionService.findByRule(id);
     }
 
+    @Roles('ADMIN')
+    @UseGuards(UserGuard,RolesGuard)
     @Delete(':id')
     async deleteRule(@Param('id') id): Promise<boolean> {
         return this.RulesService.delete(id);

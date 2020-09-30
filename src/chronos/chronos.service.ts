@@ -38,6 +38,12 @@ export class ChronosService {
         return await this.chronosModel.find({ "supplier" : supplier });
     }
 
+    async findByManySupplier(suppliers:Array<string>){
+        return await this.chronosModel.find().where('supplier').in(suppliers).populate({path:'supplier', model:'Supplier'})
+        .populate('created_by')
+        .populate('modified_by').exec();       
+    }
+
     async findByExecuteHour(executeHour:string){
         return await this.chronosModel.find({ "executeHour" : executeHour });
     }

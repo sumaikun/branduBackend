@@ -29,6 +29,16 @@ export class ProductTraceService {
         }}).populate('supplier').populate('chronos');
     }
 
+    async findBetweenDatesByManySupplier(fromDate: Date, toDate: Date,suppliers:Array<string>){
+        return await this.productTraceModel.find({updatedAt:{
+            $gte: fromDate,
+            $lt: toDate
+        }}).where('supplier').in(suppliers)
+        .populate('supplier').populate('chronos')
+        .populate('created_by')
+        .populate('modified_by').exec();       
+    }
+
     async findBetweenDatesWithID(fromDate: Date, toDate: Date, id: string): Promise<any> {
         //Date(2012, 7, 14)
         return await this.productTraceModel.find({updatedAt:{
