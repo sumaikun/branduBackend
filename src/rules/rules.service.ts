@@ -311,48 +311,77 @@ export class RulesService {
                 }
             }
 
-            if(rule.ruleType === "PRICES"){                
+            if(rule.ruleType === "PRICES"){
+                
+                let continueToPrice = false
 
-                for(let i=0; i<copyLine.variants.length;i++)
+                if(Array.isArray(rule.fieldsToCheck) && rule.fieldsToCheck.length > 0 )
                 {
-                    if(rule.then.includes("price*")){
+                    rule.fieldsToCheck.map( field => {
+                        const ifWords = rule.if.split(",")
+                            ifWords.map( word => {
+                                if(word){
 
-                        const dataToMultiply = rule.then.replace("price*","")
+                                    if(copyLine[field] && copyLine[field].includes(word) )
+                                    {
+                                        continueToPrice = true
+                                    }
+                                }
+                            })    
+                    })
+                }
 
-                        if(!isNaN(parseInt(dataToMultiply)))
-                        {
-                            copyLine.variants[i].price = Number(copyLine.variants[i].price) * Number(dataToMultiply)
+                else if(rule.then && !rule.if){
+                    continueToPrice = true
+                }
 
-                            //console.log("corrected price",copyLine.variants[i].price)
-                        }                       
-                        
+
+                if(continueToPrice){
+                    
+                    for(let i=0; i<copyLine.variants.length;i++)
+                    {
+                        if(rule.then.includes("price*")){
+    
+                            const dataToMultiply = rule.then.replace("price*","")
+    
+                            if(!isNaN(parseInt(dataToMultiply)))
+                            {
+                                copyLine.variants[i].price = Number(copyLine.variants[i].price) * Number(dataToMultiply)
+    
+                                //console.log("corrected price",copyLine.variants[i].price)
+                            }                       
+                            
+                        }
+    
+                        if(rule.then.includes("price+(")){
+    
+                            const checkFormat = rule.then.substring(
+                                rule.then.lastIndexOf("(") + 1, 
+                                rule.then.lastIndexOf(")")
+                            );
+    
+                            const numberToMultiply = checkFormat.replace("%", '')
+    
+                            if(!isNaN(parseInt(numberToMultiply)))
+                            {
+                                const newPrice = Number(copyLine.variants[i].price) +  ( Number(copyLine.variants[i].price) *  ( Number(numberToMultiply) / 100 ) )
+    
+                                copyLine.variants[i].price = newPrice
+                                //console.log("corrected price",copyLine.variants[i].price)
+                            }                        
+                            
+                        }
                     }
-
-                    if(rule.then.includes("price+(")){
-
-                        const checkFormat = rule.then.substring(
-                            rule.then.lastIndexOf("(") + 1, 
-                            rule.then.lastIndexOf(")")
-                        );
-
-                        const numberToMultiply = checkFormat.replace("%", '')
-
-                        if(!isNaN(parseInt(numberToMultiply)))
-                        {
-                            const newPrice = Number(copyLine.variants[i].price) +  ( Number(copyLine.variants[i].price) *  ( Number(numberToMultiply) / 100 ) )
-
-                            copyLine.variants[i].price = newPrice
-                            //console.log("corrected price",copyLine.variants[i].price)
-                        }                        
-                        
-                    }
+                    
+                    copyLine.mode = "test"
+    
+                    //console.log("copyLine",copyLine.id)
+    
+                    testData = insertIntoArray(testData,copyLine)
                 }
                 
-                copyLine.mode = "test"
 
-                //console.log("copyLine",copyLine.id)
-
-                testData = insertIntoArray(testData,copyLine)
+               
             }
 
             if(rule.ruleType === "COLOR"){
@@ -371,8 +400,7 @@ export class RulesService {
                     copyLine.mode = "test"
 
                     testData = insertIntoArray(testData,copyLine)
-                }
-                
+                }                
             }
 
            })
