@@ -63,8 +63,8 @@ export class RulesController {
             currentRule.then === Rule.then &&  
             currentRule.ruleType === Rule.ruleType &&   
             currentRule.operationType === Rule.operationType &&
-            currentRule.supplier.toString() === Rule.supplier &&
-            currentRule.similarity.toString() === Rule.similarity.toString()
+            currentRule.supplier?.toString() === Rule.supplier &&
+            currentRule.similarity?.toString() === Rule.similarity?.toString()
         )
         {
             throw new BadRequestException('Can not update rule with the same data');
@@ -77,14 +77,14 @@ export class RulesController {
         console.log("versionsSaved",versionsSaved)
 
         versionsSaved.map( data => {
-            if( arraysEqual(data.selectedFields,Rule.selectedFields) &&
-                arraysEqual(data.fieldsToCheck,Rule.fieldsToCheck) &&   
-                data.if === Rule.if &&    
-                data.then === Rule.then &&  
-                data.ruleType === Rule.ruleType &&   
-                data.operationType === Rule.operationType &&
-                data.supplier.toString() === Rule.supplier &&
-                data.similarity.toString() === Rule.similarity.toString()
+            if( arraysEqual(data.selectedFields,currentRule.selectedFields) &&
+                arraysEqual(data.fieldsToCheck,currentRule.fieldsToCheck) &&   
+                data.if === currentRule.if &&    
+                data.then === currentRule.then &&  
+                data.ruleType === currentRule.ruleType &&   
+                data.operationType === currentRule.operationType &&
+                data.supplier?.toString() === currentRule.supplier &&
+                data.similarity?.toString() === currentRule.similarity?.toString()
             )
             {
                 versionExist = true
@@ -93,7 +93,7 @@ export class RulesController {
        
         if(!versionExist)
         {
-            const copyRule = { ...Rule , originalRule:id }
+            const copyRule = { ...currentRule , originalRule:id }
             await this.VersionService.create( copyRule )
         }
 
