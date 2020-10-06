@@ -6,12 +6,14 @@ import { ProductTraceModule } from '../productTrace/productTrace.module'
 import { ChronosQueueModule } from '../jobs/Queues/chronos/chronos.module'
 import { UsersModule } from '../users/users.module'
 import { SuppliersModule } from '../suppliers/suppliers.module'
+import { ProductBackupModule } from '../backups/backups.module'
 @Module({
   imports: [AuthModule,
     ChronosQueueModule,
     ProductTraceModule,
     UsersModule,
     SuppliersModule,
+    ProductBackupModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 5,

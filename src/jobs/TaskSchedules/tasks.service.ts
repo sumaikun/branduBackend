@@ -26,4 +26,10 @@ export class TasksService {
     }
   }
 
+  @Cron('0 50 23 * * 1-5')
+  async backupCron() {
+    this.logger.debug('Backup process at 23:50');
+    await this.chronosQueue.add('makeBackup');
+  }
+
 }

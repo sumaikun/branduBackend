@@ -6,6 +6,7 @@ import { RulesModule } from '../../../rules/rules.module';
 import { SuppliersModule } from '../../../suppliers/suppliers.module';
 import { ProductTraceModule } from '../../../productTrace/productTrace.module';
 //import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ProductBackupModule } from '../../../backups/backups.module';
 
 
 const QueueModule = BullModule.registerQueue({ 
@@ -21,7 +22,8 @@ const QueueModule = BullModule.registerQueue({
     forwardRef(() => ShopifyModule),
     RulesModule,
     SuppliersModule,
-    ProductTraceModule],
+    ProductTraceModule,
+    ProductBackupModule],
   providers: [ChronosProcessor],
   exports:[QueueModule]
 })

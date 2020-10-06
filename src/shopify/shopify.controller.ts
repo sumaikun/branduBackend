@@ -4,11 +4,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ShopifyService } from './shopify.service'
 import { ProductTraceService } from '../productTrace/productTrace.service'
 import { SuppliersService } from '../suppliers/suppliers.service'
+import { ProductBackupService } from '../backups/backups.service'
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { UserGuard, RolesGuard } from '../auth/guards/custom.guards';
 import {Roles} from '../auth/decorators/custom.decorators'
 import { AccessUser } from '../auth/decorators/custom.decorators'
+import * as moment from 'moment'
 
 @Controller('shopify')
 @UseGuards(AuthGuard('jwt'))
@@ -17,6 +19,7 @@ export class ShopifyController {
         private readonly shopifyService: ShopifyService,
         private readonly productTraceService: ProductTraceService,
         private readonly suppliersService:SuppliersService,
+        private readonly productBackupService:ProductBackupService,
         @InjectQueue('chronos') private readonly chronosQueue: Queue) {}
 
     @Get("/countByVendor/:vendor")
@@ -131,6 +134,27 @@ export class ShopifyController {
         this.chronosQueue.add('massiveUpdate',data);
                     
        
+        return null
+    }
+
+    @Roles('ADMIN')
+    @UseGuards(UserGuard,RolesGuard)
+    @Get("/downloadBackup/:dayDate")
+    async downloadBackup(@Param('dayDate') dayDate) {
+        console.log("dayDate",dayDate)
+        const toDate = moment(dayDate).add('days', 1).toISOString()
+        const response = await this.productBackupService.findBetweenDates( new Date(dayDate), new Date(toDate) )
+        return response
+    }
+
+    @Roles('ADMIN')
+    @UseGuards(UserGuard,RolesGuard)
+    @Get("/restoreBackup/:dayDate")
+    async restoreBackup(@Param('dayDate') dayDate) {
+        console.log("dayDate",dayDate)
+        const toDate = moment(dayDate).add('days', 1).toISOString()
+        const response = await this.productBackupService.findBetweenDates( new Date(dayDate), new Date(toDate) )
+        this.chronosQueue.add('restoreBackup',response);
         return null
     }
 

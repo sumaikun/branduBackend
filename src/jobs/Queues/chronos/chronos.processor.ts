@@ -5,6 +5,7 @@ import { ShopifyService } from '../../../shopify/shopify.service'
 import { RulesService } from '../../../rules/rules.service'
 import { SuppliersService } from '../../../suppliers/suppliers.service'
 import { ProductTraceService } from '../../../productTrace/productTrace.service'
+import { ProductBackupService } from '../../../backups/backups.service'
 
 //moment
 import * as moment from 'moment';
@@ -16,7 +17,8 @@ export class ChronosProcessor {
     private readonly shopifyService: ShopifyService,
     private readonly rulesService: RulesService,
     private readonly suppliersService: SuppliersService,
-    private readonly productTraceService: ProductTraceService
+    private readonly productTraceService: ProductTraceService,
+    private readonly productBackupService: ProductBackupService
   ){}
 
   private readonly logger = new Logger(ChronosProcessor.name);
@@ -147,13 +149,13 @@ export class ChronosProcessor {
         //console.log("process")   
         //await this.sleep(10)            
         if( (index + 1) % 20 == 0 ){
-            this.logger.debug("wait")
+            //this.logger.debug("wait")
             //console.log("wait")
             await this.sleep(3000)
         }
 
         if( (index + 1) % 125 == 0 ){
-            this.logger.debug("wait longer")
+            //this.logger.debug("wait longer")
             //console.log("wait")
             await this.sleep(5000)
         
@@ -179,6 +181,56 @@ export class ChronosProcessor {
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  @Process('makeBackup')
+  async makeBackup(job: Job) {
+    this.logger.debug("makeBackup")
+    const totalProducts = await this.shopifyService.getAll()
+    this.logger.debug("makeBackup products got")
+    for (let index = 0; index < totalProducts.products.length; index++) {
+
+      //this.logger.debug(index+"-"+totalProducts.products[index].id)
+      await this.productBackupService.create({ shopifyId: totalProducts.products[index].id, shopifyProduct: totalProducts.products[index]})
+    }
+  }
+
+
+  @Process('restoreBackup')
+  async restoreBackup(job: Job) {
+    const data = job.data
+    let errorCount = 0
+    let successCount = 0
+    for (let index = 0; index < data.length; index++) {
+              
+        if( (index + 1) % 20 == 0 ){
+            //this.logger.debug("backup wait")
+            //console.log("wait")
+            await this.sleep(3000)
+        }
+
+        if( (index + 1) % 125 == 0 ){
+            //this.logger.debug("backup wait longer")
+            //console.log("wait")
+            await this.sleep(5000)
+        
+        }        
+       
+        this.shopifyService.updateProduct(data[index].shopifyId,data[index].shopifyProduct).then( ok => { 
+            successCount++
+            this.logger.debug("backup successCount: "+successCount)
+            //console.log("successCount",successCount) 
+        })
+        .catch( error =>  {
+            errorCount++
+            this.logger.debug("backup errorCount: "+errorCount)
+            //console.log("errorCount",errorCount)
+        })
+        //console.log("done")
+        await this.sleep(340)
+               
+    }
+                 
   }
 
 }

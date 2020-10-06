@@ -10,6 +10,7 @@ export class ShopifyService {
 
     async getAll(): Promise<any> {
         
+        console.log("getAll")
 
         let keepFetching = true
 
