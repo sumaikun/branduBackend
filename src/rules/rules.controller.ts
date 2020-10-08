@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, BadRequestException, NotAcceptableException } from '@nestjs/common';
 import { RulesService } from './rules.service';
 import {  VersionService  } from '../rulesVersion/rulesVersion.service';
 import { RuleDto } from './dto/rule-dto';
@@ -8,12 +8,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { UserGuard, RolesGuard } from '../auth/guards/custom.guards';
 import { AccessUser } from '../auth/decorators/custom.decorators'
 import {Roles} from '../auth/decorators/custom.decorators'
+import {  ChronosService  } from '../chronos/chronos.service';
 
 @Controller('rules')
 @UseGuards(AuthGuard('jwt'))
 export class RulesController {
     constructor(private readonly RulesService: RulesService,
-        private readonly VersionService: VersionService) {}
+        private readonly VersionService: VersionService,
+        private readonly ChronosService: ChronosService) {}
 
     @Get()
     @UseGuards(UserGuard)
@@ -109,7 +111,24 @@ export class RulesController {
     @UseGuards(UserGuard,RolesGuard)
     @Delete(':id')
     async deleteRule(@Param('id') id): Promise<boolean> {
-        return this.RulesService.delete(id);
+         
+        const chronosResult = await this.ChronosService.findIfRuleOnChronos(id)
+
+        if(chronosResult.length > 0)
+        {
+            throw new  NotAcceptableException()
+        }
+
+        const versionsSaved = await this.VersionService.findByRule(id)
+
+        console.log("versionsSaved",versionsSaved)
+
+        versionsSaved.map( async version => {
+            await this.VersionService.delete(version._id)
+        })
+
+        return  await this.RulesService.delete(id)        
+     
     }
 
     @Post('testRules')
@@ -124,6 +143,7 @@ export class RulesController {
 
         return testData
     }
+
 
   
 }

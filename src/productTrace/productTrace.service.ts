@@ -8,6 +8,13 @@ export class ProductTraceService {
 
     constructor(@InjectModel('ProductTrace') private readonly productTraceModel: Model<any>) {}
 
+    async findAll(): Promise<any[]> {
+        return await this.productTraceModel.find()       
+        .populate('created_by')
+        .populate('modified_by')
+        .exec();        
+    }
+
     async create(input: any): Promise<any> {
         const createproductTraceModel = new this.productTraceModel(input);
         return await createproductTraceModel.save();
@@ -46,6 +53,16 @@ export class ProductTraceService {
             $lt: toDate
         },shopifyId:id});
         //},_id: Types.ObjectId(id)});
+    }
+
+
+    async findByMonth(smonth: number): Promise<any> {
+       
+        return await this.productTraceModel.aggregate([
+            {$addFields: {  "month" : {$month: '$updatedAt'}}},
+            {$match: { month: smonth}}
+          ]);
+    
     }
 
 

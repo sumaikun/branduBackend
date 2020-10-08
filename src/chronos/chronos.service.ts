@@ -48,4 +48,8 @@ export class ChronosService {
         return await this.chronosModel.find({ "executeHour" : executeHour });
     }
 
+    async findIfRuleOnChronos(ruleId:string){
+        return await this.chronosModel.find({rules:ruleId})
+    }
+
 }
