@@ -35,9 +35,12 @@ export class ShopifyController {
     @UseGuards(UserGuard)
     async allProducts(@AccessUser() user: any) {
         //console.log("process.env",process.env)
-        const shopifyData = await this.shopifyService.getAll()
+        //const shopifyData = await this.shopifyService.getAll()
 
-        //console.log("shopifyData",shopifyData)
+        const shopifyData = await this.chronosQueue.add('massiveUpdate');
+
+        console.log("shopifyData",shopifyData)
+        
         if(user.role === "ADMIN"){
             return shopifyData
         }
