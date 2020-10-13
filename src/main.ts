@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './utils/all-exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import * as bodyParser from 'body-parser';
+import { properties } from './properties'
 
 async function bootstrap() {
   
@@ -18,6 +19,8 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   app.useGlobalPipes(new ValidationPipe());
+
+  properties.setDataToPersist({})
 
   process.env.globalShopifyProductsByService = JSON.stringify({}) 
 

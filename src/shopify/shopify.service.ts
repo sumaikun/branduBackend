@@ -43,17 +43,17 @@ export class ShopifyService {
             {
                 try{
                     products = await this.httpService.get(process.env.SHOPIFY_CONNECTION+"products.json?limit=250&page_info="+page_info).toPromise();
-                    await this.sleep(1500)
+                    await this.sleep(500)
                     httpErrorS = false
                     
                 }catch(error){
-                    console.log("error",error)
+                    console.log("error",errorAcummulation)
                     errorAcummulation++
                     if(errorAcummulation > 50)
                     {
                         throw new BadGatewayException();
                     }
-                    await this.sleep(5000)
+                    await this.sleep(3000)
                 }
             }
            

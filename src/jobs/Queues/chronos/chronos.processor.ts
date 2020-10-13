@@ -10,6 +10,8 @@ import { ProductBackupService } from '../../../backups/backups.service'
 //moment
 import * as moment from 'moment';
 
+import { properties } from '../../../properties'
+
 @Processor('chronos')
 export class ChronosProcessor {
 
@@ -244,10 +246,9 @@ export class ChronosProcessor {
     console.log("global",jobId,result)
     if(result)
     {
-      process.env.globalShopifyProductsByService = JSON.stringify(result)
+      properties.setDataToPersist(result)
     }    
-    //const job = await this.immediateQueue.getJob(jobId);
-    //console.log('(Global) on completed: job ', job.id, ' -> result: ', result);
+  
   }
 
 }

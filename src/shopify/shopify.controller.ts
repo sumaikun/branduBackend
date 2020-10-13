@@ -11,6 +11,7 @@ import { UserGuard, RolesGuard } from '../auth/guards/custom.guards';
 import {Roles} from '../auth/decorators/custom.decorators'
 import { AccessUser } from '../auth/decorators/custom.decorators'
 import * as moment from 'moment'
+import { properties } from '../properties'
 
 @Controller('shopify')
 @UseGuards(AuthGuard('jwt'))
@@ -37,7 +38,7 @@ export class ShopifyController {
         //console.log("process.env",process.env)
         //const shopifyData = await this.shopifyService.getAll()
 
-        console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
+        console.log("globalShopifyProductsByService",properties.getInstance().getDataToPersist())
 
         const shopifyJob = await this.chronosQueue.add('getProductsFromStore');
 
@@ -53,7 +54,9 @@ export class ShopifyController {
 
         console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
 
-        const shopifyData = JSON.parse(process.env.globalShopifyProductsByService)
+        const shopifyData = properties.getInstance().getDataToPersist()
+
+        console.log("shopifyData",shopifyData[0])
         
         if(user.role === "ADMIN"){
             return shopifyData
