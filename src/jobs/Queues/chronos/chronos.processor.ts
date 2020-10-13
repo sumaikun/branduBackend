@@ -56,7 +56,7 @@ export class ChronosProcessor {
         this.logger.debug("totalProducts.length() : "+totalProducts.products.length)
         //console.log("totalProducts.length()",totalProducts.products.length)
 
-        const supplierProducts = totalProducts.products.filter( product => product.vendor ===  jobSupplier.vendorId )
+        const supplierProducts = totalProducts.products.filter( product => product.vendor.toLowerCase() ===  jobSupplier.vendorId.toLowerCase() )
 
         //console.log("supplierProducts.length",supplierProducts.length)
 
