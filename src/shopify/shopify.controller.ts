@@ -37,9 +37,10 @@ export class ShopifyController {
         //console.log("process.env",process.env)
         //const shopifyData = await this.shopifyService.getAll()
 
-        const shopifyData = this.chronosQueue.add('getProductsFromStore');
+        const shopifyData = await this.chronosQueue.add('getProductsFromStore');
 
-        //console.log("shopifyData",shopifyData)
+        console.log("shopifyData",shopifyData)
+        
         if(user.role === "ADMIN"){
             return shopifyData
         }
