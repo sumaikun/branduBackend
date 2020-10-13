@@ -1,4 +1,4 @@
-import { Process, Processor } from '@nestjs/bull';
+import { OnGlobalQueueCompleted, Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { ShopifyService } from '../../../shopify/shopify.service'
@@ -237,7 +237,14 @@ export class ChronosProcessor {
   async getProductsFromStore(job: Job) {
     console.log("on getProductsFromStore queue")
     job.returnvalue =  {products:[]}
-    return
+    return {products:[]}
+  }
+
+  @OnGlobalQueueCompleted()
+  async onGlobalCompleted(jobId: number, result: any) {
+    console.log("global",jobId,result)
+    //const job = await this.immediateQueue.getJob(jobId);
+    //console.log('(Global) on completed: job ', job.id, ' -> result: ', result);
   }
 
 }
