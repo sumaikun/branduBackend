@@ -241,7 +241,7 @@ export class ChronosProcessor {
     return await this.shopifyService.getAll()
   }
 
-  @OnGlobalQueueCompleted()
+  /*@OnGlobalQueueCompleted()
   async onGlobalCompleted(jobId: number, result: any) {
     console.log("global",jobId,result)
     if(result)
@@ -250,7 +250,7 @@ export class ChronosProcessor {
       properties.setDataToPersist(result)
     }    
   
-  }
+  }*/
 
 }
 
