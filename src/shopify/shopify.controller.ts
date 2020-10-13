@@ -41,7 +41,7 @@ export class ShopifyController {
 
         const isComplete = await shopifyJob.isCompleted()
 
-        console.log("shopifyJob is completed",shopifyJob.returnvalue(),isComplete)
+        console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
         
         if(user.role === "ADMIN"){
             return []
