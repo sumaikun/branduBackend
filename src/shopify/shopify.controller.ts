@@ -39,9 +39,16 @@ export class ShopifyController {
 
         const shopifyJob = await this.chronosQueue.add('getProductsFromStore');
 
-        const isComplete = await shopifyJob.isCompleted()
+        let isComplete = false
 
-        console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
+        while(!isComplete)
+        {
+            isComplete = await shopifyJob.isCompleted()
+
+            console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
+        }
+
+       
         
         if(user.role === "ADMIN"){
             return []
