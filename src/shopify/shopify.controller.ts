@@ -51,12 +51,12 @@ export class ShopifyController {
         }
 
         console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
+
+        const shopifyData = JSON.parse(process.env.globalShopifyProductsByService)
         
         if(user.role === "ADMIN"){
-            return []
+            return shopifyData
         }
-
-        return { products: [] }
 
         /*const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
 

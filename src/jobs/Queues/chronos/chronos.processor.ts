@@ -236,8 +236,7 @@ export class ChronosProcessor {
   @Process('getProductsFromStore')
   async getProductsFromStore(job: Job) {
     console.log("on getProductsFromStore queue")
-    job.returnvalue =  {products:[]}
-    return {products:[]}
+    return await this.shopifyService.getAll()
   }
 
   @OnGlobalQueueCompleted()
