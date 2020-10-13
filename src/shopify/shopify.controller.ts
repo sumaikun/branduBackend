@@ -50,7 +50,7 @@ export class ShopifyController {
             console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
         }
 
-        console.log("shopifyJob is completed",shopifyJob,isComplete)
+        console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
         
         if(user.role === "ADMIN"){
             return []

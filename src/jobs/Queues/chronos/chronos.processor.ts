@@ -243,6 +243,10 @@ export class ChronosProcessor {
   @OnGlobalQueueCompleted()
   async onGlobalCompleted(jobId: number, result: any) {
     console.log("global",jobId,result)
+    if(result)
+    {
+      process.env.globalShopifyProductsByService = JSON.stringify(result)
+    }    
     //const job = await this.immediateQueue.getJob(jobId);
     //console.log('(Global) on completed: job ', job.id, ' -> result: ', result);
   }
