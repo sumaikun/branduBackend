@@ -165,14 +165,7 @@ export class RulesService {
                             const ifWords = rule.if.split(",")
                             ifWords.map( word => {
                                 if(word){
-
-                                    console.log("word",word,field,copyLine[field].includes(word),copyLine.title,copyLine[field])
-
-                                    if(copyLine[field].includes(word))
-                                    {
-                                        console.log("got it",copyLine)
-                                    }
-
+                                    
                                     if(copyLine[field] && copyLine[field].includes(word)
                                     && ( rule.operationType == "REPLACE" || rule.operationType == "DELETE" ) && !rule.similarity )
                                     {
