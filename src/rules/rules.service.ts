@@ -54,19 +54,15 @@ export class RulesService {
             
            data.exampleData.map( line => {
 
-            //console.log("line",line)
-
             testData = insertIntoArray(testData,line)
             
             let copyLine = JSON.parse(JSON.stringify(line))
 
-            //let copyLine = Object.assign({}, line); 
-
-            //copyLine.id = "T"+copyLine.id
-
             copyLine.id = line.id+1
 
             copyLine.originalId = line.id
+
+            console.log("copyLine.originalId",copyLine.originalId)
 
             if(rule.ruleType === "GRAMMAR_CORRECTION"){
 
@@ -170,6 +166,13 @@ export class RulesService {
                             ifWords.map( word => {
                                 if(word){
 
+                                    console.log("word",word,field,copyLine[field].includes(word),copyLine.title,copyLine[field])
+
+                                    if(copyLine[field].includes(word))
+                                    {
+                                        console.log("got it",copyLine)
+                                    }
+
                                     if(copyLine[field] && copyLine[field].includes(word)
                                     && ( rule.operationType == "REPLACE" || rule.operationType == "DELETE" ) && !rule.similarity )
                                     {
@@ -177,12 +180,13 @@ export class RulesService {
                                             case "REPLACE":
                                                 
                                                 copyLine[field] = copyLine[field].replace( word, rule.then )
+                                                break;
 
                                             case "DELETE":
 
                                                 copyLine[field] = copyLine[field].replace( word+",", "" )
                                                 copyLine[field] = copyLine[field].replace( word, "" )                                       
-                                                
+                                                break;
 
                                             default:
                                                 break;
@@ -213,11 +217,13 @@ export class RulesService {
                                                             case "REPLACE":
                                                                 
                                                                 copyLine[field] = copyLine[field].replace( word, rule.then )
+                                                                break;
                 
                                                             case "DELETE":
                 
                                                                 copyLine[field] = copyLine[field].replace( word+",", "" )
-                                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                                copyLine[field] = copyLine[field].replace( word, "" )
+                                                                break;                                       
                                                                 
                 
                                                             default:
@@ -246,11 +252,13 @@ export class RulesService {
                                                             case "REPLACE":
                                                                 
                                                                 copyLine[field] = copyLine[field].replace( word, rule.then )
+                                                                break;
                 
                                                             case "DELETE":
                 
                                                                 copyLine[field] = copyLine[field].replace( word+"-", "" )
-                                                                copyLine[field] = copyLine[field].replace( word, "" )                                       
+                                                                copyLine[field] = copyLine[field].replace( word, "" ) 
+                                                                break;                                      
                                                                 
                 
                                                             default:
@@ -278,12 +286,13 @@ export class RulesService {
                                                             case "REPLACE":
                                                                 
                                                                 copyLine[field] = copyLine[field].replace( word, rule.then )
+                                                                break;
                 
                                                             case "DELETE":
                 
                                                                 copyLine[field] = copyLine[field].replace( word+",", "" )
                                                                 copyLine[field] = copyLine[field].replace( word, "" )                                       
-                                                                
+                                                                break;
                 
                                                             default:
                                                                 break;

@@ -95,7 +95,18 @@ export class RulesController {
        
         if(!versionExist)
         {
-            const copyRule = { ...currentRule , originalRule:id }
+            const copyRule = { 
+                if:currentRule.if,
+                then:currentRule.then,
+                ruleType:currentRule.ruleType,
+                operationType:currentRule.operationType,
+                supplier:currentRule.supplier,
+                similarity:currentRule.similarity,
+                fieldsToCheck:currentRule.fieldsToCheck,
+                selectedFields:currentRule.selectedFields,
+                originalRule:id
+            }
+            
             await this.VersionService.create( copyRule )
         }
 

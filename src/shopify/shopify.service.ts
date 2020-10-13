@@ -48,10 +48,11 @@ export class ShopifyService {
                 }catch(error){
                     console.log("error",error)
                     errorAcummulation++
-                    if(errorAcummulation > 30)
+                    if(errorAcummulation > 50)
                     {
                         throw new BadGatewayException();
                     }
+                    await this.sleep(5000)
                 }
             }
            
