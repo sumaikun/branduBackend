@@ -37,15 +37,16 @@ export class ShopifyController {
         //console.log("process.env",process.env)
         //const shopifyData = await this.shopifyService.getAll()
 
-        const shopifyData = await this.chronosQueue.add('massiveUpdate');
+        const shopifyData = this.chronosQueue.add('massiveUpdate',data);
 
-        console.log("shopifyData",shopifyData)
-        
+        //console.log("shopifyData",shopifyData)
         if(user.role === "ADMIN"){
             return shopifyData
         }
 
-        const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
+        return { products: [] }
+
+        /*const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
 
         let userSuppliersArray = []
 
@@ -55,7 +56,7 @@ export class ShopifyController {
 
         const filteredData = shopifyData.products.filter( data =>  userSuppliersArray.includes(data.vendor) )
 
-        return { products: filteredData }
+        return { products: filteredData }*/
 
     }
 
