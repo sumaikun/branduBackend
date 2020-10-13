@@ -37,9 +37,11 @@ export class ShopifyController {
         //console.log("process.env",process.env)
         //const shopifyData = await this.shopifyService.getAll()
 
-        const shopifyJob = await (await this.chronosQueue.add('getProductsFromStore')).isCompleted;
+        const shopifyJob = await this.chronosQueue.add('getProductsFromStore');
 
-        console.log("shopifyJob",shopifyJob)
+        await shopifyJob.isCompleted()
+
+        console.log("shopifyJob is completed")
         
         if(user.role === "ADMIN"){
             return []
