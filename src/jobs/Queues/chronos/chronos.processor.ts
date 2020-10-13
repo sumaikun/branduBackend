@@ -236,7 +236,7 @@ export class ChronosProcessor {
   @Process('getProductsFromStore')
   async getProductsFromStore(job: Job) {
     console.log("on getProductsFromStore queue")
-    return []
+    return {products:[]}
   }
 
 }
