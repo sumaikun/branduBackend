@@ -47,7 +47,8 @@ export class ShopifyController {
         {
             isComplete = await shopifyJob.isCompleted()
 
-            console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
+            //console.log("shopifyJob is completed",shopifyJob.returnvalue,isComplete)
+            await this.sleep(1000) 
         }
 
         console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
