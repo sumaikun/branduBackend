@@ -37,6 +37,8 @@ export class ShopifyController {
         //console.log("process.env",process.env)
         //const shopifyData = await this.shopifyService.getAll()
 
+        console.log("globalShopifyProductsByService",process.env.globalShopifyProductsByService )
+
         const shopifyJob = await this.chronosQueue.add('getProductsFromStore');
 
         let isComplete = false

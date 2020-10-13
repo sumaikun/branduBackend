@@ -18,6 +18,8 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   app.useGlobalPipes(new ValidationPipe());
+
+  process.env.globalShopifyProductsByService = JSON.stringify({products:[]})
  
 
   await app.listen(3000);
