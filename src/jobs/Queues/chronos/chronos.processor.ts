@@ -246,6 +246,7 @@ export class ChronosProcessor {
     console.log("global",jobId,result)
     if(result)
     {
+      console.log("properties.getInstance().getDataToPersist()",properties.getInstance().getDataToPersist())
       properties.setDataToPersist(result)
     }    
   
