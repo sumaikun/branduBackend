@@ -36,9 +36,9 @@ export class ShopifyController {
     @UseGuards(UserGuard)
     async allProducts(@AccessUser() user: any) {
         //console.log("process.env",process.env)
-        //const shopifyData = await this.shopifyService.getAll()
+        const shopifyData = await this.shopifyService.getAll()
 
-        console.log("globalShopifyProductsByService",properties.getInstance().getDataToPersist())
+        /*console.log("globalShopifyProductsByService",properties.getInstance().getDataToPersist())
 
         const shopifyJob = await this.chronosQueue.add('getProductsFromStore');
 
@@ -56,13 +56,13 @@ export class ShopifyController {
 
         const shopifyData = properties.getInstance().getDataToPersist()
 
-        console.log("shopifyData",shopifyData[0])
+        console.log("shopifyData",shopifyData[0])*/
         
         if(user.role === "ADMIN"){
             return shopifyData
         }
 
-        /*const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
+        const userSuppliers = await this.suppliersService.findByManySupplier(user.suppliers)
 
         let userSuppliersArray = []
 
@@ -72,7 +72,7 @@ export class ShopifyController {
 
         const filteredData = shopifyData.products.filter( data =>  userSuppliersArray.includes(data.vendor) )
 
-        return { products: filteredData }*/
+        return { products: filteredData }
 
     }
 
