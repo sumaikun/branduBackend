@@ -43,6 +43,7 @@ export class ShopifyService {
             {
                 try{
                     products = await this.httpService.get(process.env.SHOPIFY_CONNECTION+"products.json?limit=250&page_info="+page_info).toPromise();
+                    await this.sleep(1500)
                     httpErrorS = false
                     
                 }catch(error){
